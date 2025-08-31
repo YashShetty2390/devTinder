@@ -11,13 +11,13 @@ app.use("/admin/getAdminData", (req, res, next) => {
 app.use("/admin/deleteAdminData", (req, res) => {
     res.send("Deleted Admin Data");
 });
-app.use("/user", (req, res) => {
+app.get("/user", (req, res) => {
     console.log("Inside wildcard route");
     throw new error("trtrtrt");
     //res.send("Hello from server ");
 
 });
-app.use((err, req, res, next) => {
+app.use("/", (err, req, res, next) => {
     console.log("Inside wildcard route");
     if (err) {
         res.status(500).send("Something went wrong");
