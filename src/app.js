@@ -25,16 +25,12 @@ app.use("/", (err, req, res, next) => {
         res.status(500).send("Something went wrong");
     }
 });*/
-app.post("/signup", (req, res) => {
-    const userObj = new User({
-        firstName: "Yashashwini",
-        lastName: "Shetty",
-        emailId: "yashashwinisshetty@gmail.com",
-        gender: "female",
-        age: 35
-    });
+app.use(express.json());
+app.post("/signup", async (req, res) => {
+    console.log(req.body);
+    const userObj = new User(req.body);
     try {
-        userObj.save();
+        await userObj.save();
         res.send("User added successfully");
     } catch (err) {
         res.status(500).send("Error occured while saving data");
