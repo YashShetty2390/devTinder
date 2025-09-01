@@ -1,9 +1,12 @@
 const express = require("express");
-const { adminAuth } = require("./middlewares/adminAuth");
+const { auth } = require("./middlewares/auth");
 const app = express();
 const { connectDB } = require("./config/database");
 const User = require("./models/User");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
+
 /*app.use("/admin", adminAuth);
 app.use("/admin/getAdminData", (req, res, next) => {
 
@@ -26,6 +29,7 @@ app.use("/", (err, req, res, next) => {
     }
 });*/
 app.use(express.json());
+app.use(cookieParser());
 app.post("/signup", async (req, res) => {
     const userObj = new User(req.body);
     try {
@@ -49,17 +53,22 @@ app.post("/login", async (req, res) => {
         const isMatch = await bcrypt.compare(password, user[0].password);
         if (!isMatch) {
             return res.status(400).send("Invalid email or password");
+        } else {
+            const token = jwt.sign({ _id: user[0]._id }, "devtindersecret", { expiresIn: '1h' });
+            res.cookie("token", token, { httpOnly: true });
+            res.send("Login successful");
         }
-        res.send("Login successful");
+
     } catch (err) {
         res.status(500).send("Error occured while logging in");
     }
 });
 
-app.get("/feed", async (req, res) => {
+app.get("/feed", auth, async (req, res) => {
     try {
         const users = await User.find();
         res.json(users);
+
     } catch (err) {
         res.status(500).send("Error occured while fetching data");
     }
