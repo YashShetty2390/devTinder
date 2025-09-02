@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const bcrypt = require("bcrypt");
 const userSchema = new mongoose.Schema({
     firstName: {
         type: String,
@@ -44,5 +45,12 @@ const userSchema = new mongoose.Schema({
         default: "Hello! I am using DevTinder."
     }
 }, { timestamps: true });
+
+
+// Compare password method
+userSchema.methods.comparePassword = async function (candidatePassword) {
+    return bcrypt.compare(candidatePassword, this.password);
+};
+
 const User = mongoose.model("User", userSchema);
 module.exports = User;
